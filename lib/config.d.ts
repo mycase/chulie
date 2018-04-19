@@ -19,7 +19,7 @@ export interface MessageConfig {
 
 export interface Config {
   aws?: AwsConfig;
-  logLevel?: string;
+  logLevel?: 'trace' | 'debug' | 'info' | 'warn' | 'error' | 'silent';
   message?: MessageConfig;
   queue: QueueConfig;
 }

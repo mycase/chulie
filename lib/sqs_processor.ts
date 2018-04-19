@@ -30,7 +30,9 @@ export class SqsProcessor {
     this.queueUrl = config.queue.url;
     this.longPollingWait = config.queue.longPollingTimeSeconds || 5;
     this.maxFetchDelay = config.queue.maxFetchingDelaySeconds || 60;
+
     if (config.aws) awsConfig.update(config.aws);
+    logger.setLevel(config.logLevel || 'info');
 
     this.messageParser = new MessageParser(config.message);
     this.messageDeletionService = new MessageDeletionService(this.queueUrl);
