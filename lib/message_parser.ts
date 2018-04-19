@@ -1,6 +1,6 @@
 import { SQS } from 'aws-sdk';
 import { MessageConfig } from './config';
-import { Message, MessageAttributes, MessageBody } from './message';
+import { Message, MessageAttributes, MessageBody, MessageBodyFormat } from './message';
 
 function parseAttributes(msg: SQS.Message): MessageAttributes {
   if (msg.MessageAttributes) {
@@ -14,27 +14,29 @@ function parseAttributes(msg: SQS.Message): MessageAttributes {
   return {};
 }
 
-function parseBody(msg: SQS.Message, fmt?: string): MessageBody {
+function parseBody(msg: SQS.Message, fmt: MessageBodyFormat): MessageBody {
   if (fmt === 'json') return JSON.parse(msg.Body || '{}');
   return msg.Body || '';
 }
 
 export default class MessageParser {
-  private config: MessageConfig;
+  private bodyFormat: MessageBodyFormat;
+  private jobClassAttribute?: string;
 
   constructor(config: MessageConfig = {}) {
-    this.config = config;
+    this.bodyFormat = config.bodyFormat || 'string';
+    this.jobClassAttribute = config.jobClassAttributeName;
   }
 
   parse(msg: SQS.Message): Message {
     const attributes = parseAttributes(msg);
-    const body = parseBody(msg, this.config.bodyFormat);
+    const body = parseBody(msg, this.bodyFormat);
     return {
       originalMessage: msg,
       id: msg.MessageId || 'Unknown_Message_ID',
       attributes,
-      jobClass: this.config.jobClassAttributeName ?
-        attributes[this.config.jobClassAttributeName] || 'default' : 'default',
+      jobClass: this.jobClassAttribute ?
+        attributes[this.jobClassAttribute] || 'default' : 'default',
       body,
     };
   }

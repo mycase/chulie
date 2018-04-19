@@ -7,6 +7,8 @@ export interface MessageAttributes {
 
 export type MessageBody = string | JsonObject;
 
+export type MessageBodyFormat = 'json' | 'string';
+
 export interface Message {
   originalMessage: SQS.Message;
   id: string;

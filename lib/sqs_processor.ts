@@ -18,19 +18,23 @@ interface JobRegistry {
 
 export class SqsProcessor {
   private jobRegistry: JobRegistry = {};
-  private queueConfig: QueueConfig;
+  private queueUrl: string;
+  private longPollingWait: number;
+  private maxFetchDelay: number;
 
   private messageParser: MessageParser;
   private messageDeletionService: MessageDeletionService;
   private retryingService: RetryingService;
 
   constructor(config: Config) {
-    this.queueConfig = config.queue;
+    this.queueUrl = config.queue.url;
+    this.longPollingWait = config.queue.longPollingTimeSeconds || 5;
+    this.maxFetchDelay = config.queue.maxFetchingDelaySeconds || 60;
     if (config.aws) awsConfig.update(config.aws);
 
     this.messageParser = new MessageParser(config.message);
-    this.messageDeletionService = new MessageDeletionService(this.queueConfig.url);
-    this.retryingService = new RetryingService(this.queueConfig.url);
+    this.messageDeletionService = new MessageDeletionService(this.queueUrl);
+    this.retryingService = new RetryingService(this.queueUrl);
   }
 
   on(jobClass: string, handler: JobHandler){
@@ -52,7 +56,7 @@ export class SqsProcessor {
     } catch (err) {
       logger.error('Failed to receive messages from queue.', err);
       const waitTime = fibonacciBackoffDelay(fetchErrCount,
-        this.queueConfig.maxFetchingDelaySeconds);
+        this.maxFetchDelay);
       logger.error(`Waiting for ${waitTime} seconds before retry.`);
       await delay(waitTime * 1000);
       fetchErrCount++;
@@ -70,11 +74,11 @@ export class SqsProcessor {
   private async fetchMessages(): Promise<SQS.Message[]> {
     const sqs = new SQS();
     const params = {
-      QueueUrl: this.queueConfig.url,
+      QueueUrl: this.queueUrl,
       AttributeNames: ['ApproximateReceiveCount'],
       MessageAttributeNames: ['All'],
       MaxNumberOfMessages: SQS_RECEIVE_MESSAGE_BATCH_LIMIT,
-      WaitTimeSeconds: this.queueConfig.longPollingTimeSeconds,
+      WaitTimeSeconds: this.longPollingWait,
     };
     const data = await sqs.receiveMessage(params).promise();
     if (data && data.Messages) {
