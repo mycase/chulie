@@ -1,0 +1,10 @@
+version: '3'
+
+services:
+  test:
+    image: ${IMAGE_NAME:-sokoban.js}
+    build:
+      context: .
+    environment:
+      - NODE_ENV=test
+    command: ['yarn', 'test']

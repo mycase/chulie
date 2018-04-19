@@ -1,0 +1,39 @@
+{
+  "name": "sokoban",
+  "version": "0.1.0",
+  "description": "Generic SQS processor",
+  "main": "dist/index.js",
+  "types": "dist/index.d.ts",
+  "publishConfig": {
+    "registry": "https://npm-proxy.fury.io/appfolio/"
+  },
+  "scripts": {
+    "build": "rm -rf dist && tsc && cp lib/*.d.ts dist/lib",
+    "prepublishOnly": "npm run build",
+    "test": "mocha ${TESTS:-test/**/*.test.ts}"
+  },
+  "dependencies": {
+    "aws-sdk": "^2.218",
+    "loglevel": "^1.5"
+  },
+  "devDependencies": {
+    "@types/chai": "^4.1.2",
+    "@types/loglevel": "^1.5.3",
+    "@types/mocha": "^5.0.0",
+    "@types/node": "^9.6.5",
+    "@types/sinon": "^4.3.0",
+    "aws-sdk-mock": "^2.0.0",
+    "chai": "^4.1.2",
+    "mocha": "^4.0.0",
+    "mocha-junit-reporter": "^1.17.0",
+    "mocha-multi-reporters": "^1.1.7",
+    "sinon": "^4.0.1",
+    "ts-node": "^5.0.1",
+    "tslint": "^5.9.1",
+    "tslint-config-airbnb-base": "^0.1.0",
+    "typescript": "^2.8.1"
+  },
+  "files": [
+    "dist/**/*"
+  ]
+}
