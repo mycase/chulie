@@ -1,11 +1,11 @@
 {
   "name": "sokoban",
-  "version": "0.1.0",
+  "version": "0.1.1",
   "description": "Generic SQS processor",
   "main": "dist/index.js",
   "types": "dist/index.d.ts",
   "publishConfig": {
-    "registry": "https://npm-proxy.fury.io/appfolio/"
+    "registry": "https://nexus.dev.appf.io/repository/npm-hosted/"
   },
   "scripts": {
     "build": "rm -rf dist && tsc && cp lib/*.d.ts dist/lib",
