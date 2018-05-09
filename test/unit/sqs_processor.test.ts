@@ -33,8 +33,6 @@ const receiveMessageParams = {
 
 describe('SqsProcessor', function () {
   beforeEach(function () {
-    this.logSpy = sandbox.spy(logger, 'info');
-    this.errorLogSpy = sandbox.spy(logger, 'error');
     this.processor = new SqsProcessor(config);
     this.defaultHandlerStub = sandbox.stub();
     this.handler1Stub = sandbox.stub();
@@ -42,6 +40,8 @@ describe('SqsProcessor', function () {
     this.processor.on('default', this.defaultHandlerStub);
     this.processor.on('TestWorker1', this.handler1Stub);
     this.processor.on('TestWorker2', this.handler2Stub);
+    this.logSpy = sandbox.spy(logger, 'info');
+    this.errorLogSpy = sandbox.spy(logger, 'error');
   });
 
   afterEach(function () {
