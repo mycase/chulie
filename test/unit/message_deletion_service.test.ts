@@ -2,7 +2,7 @@ import { expect } from 'chai';
 import { assert, createSandbox } from 'sinon';
 import AwsMock from 'aws-sdk-mock';
 
-import MessageDeletionService from '../../lib/message_deletion_service';
+import { MessageDeletionService } from '../../lib/message_deletion_service';
 import logger from '../../lib/logger';
 import { fibonacciBackoffDelay } from '../../lib/helper';
 

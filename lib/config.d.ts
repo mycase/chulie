@@ -23,5 +23,3 @@ export interface Config {
   message?: MessageConfig;
   queue: QueueConfig;
 }
-
-export default Config;

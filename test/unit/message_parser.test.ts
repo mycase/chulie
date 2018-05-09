@@ -1,6 +1,6 @@
 import { expect } from 'chai';
 import { SQS } from 'aws-sdk';
-import MessageParser from '../../lib/message_parser';
+import { MessageParser } from '../../lib/message_parser';
 import { JsonObject } from '../../lib/json_object';
 
 const msgBody: JsonObject = {

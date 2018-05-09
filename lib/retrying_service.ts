@@ -2,7 +2,7 @@ import { SQS } from 'aws-sdk';
 import logger from './logger';
 import { fibonacciBackoffDelay } from './helper';
 
-export default class RetryService {
+export class RetryingService {
   private queueUrl: string;
 
   constructor(queueUrl: string){

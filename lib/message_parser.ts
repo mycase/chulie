@@ -19,7 +19,7 @@ function parseBody(msg: SQS.Message, fmt: MessageBodyFormat): MessageBody {
   return msg.Body || '';
 }
 
-export default class MessageParser {
+export class MessageParser {
   private bodyFormat: MessageBodyFormat;
   private jobClassAttribute?: string;
 

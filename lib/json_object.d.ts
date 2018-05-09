@@ -5,5 +5,3 @@ interface JsonHash {
 }
 
 interface JsonArray extends Array<JsonObject> {}
-
-export default JsonObject;

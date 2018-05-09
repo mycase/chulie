@@ -1,7 +1,7 @@
 import { assert, createSandbox } from 'sinon';
 import AwsMock from 'aws-sdk-mock';
 
-import RetryingService from '../../lib/retrying_service';
+import { RetryingService } from '../../lib/retrying_service';
 import logger from '../../lib/logger';
 import { fibonacciBackoffDelay } from '../../lib/helper';
 

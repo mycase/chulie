@@ -3,9 +3,9 @@ import { SQS, config as awsConfig } from 'aws-sdk';
 import { Config, QueueConfig } from './config';
 import logger from './logger';
 import { Message } from './message';
-import MessageParser from './message_parser';
-import MessageDeletionService from './message_deletion_service';
-import RetryingService from './retrying_service';
+import { MessageParser } from './message_parser';
+import { MessageDeletionService } from './message_deletion_service';
+import { RetryingService } from './retrying_service';
 import { fibonacciBackoffDelay, delay } from './helper';
 
 const SQS_RECEIVE_MESSAGE_BATCH_LIMIT = 10;
