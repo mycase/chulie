@@ -47,7 +47,7 @@ At this point, this package only process messages from a single SQS queue.  Howe
 
 ### Config options
 
-Constructor of the `SqsProcessor` class takes a config object.  The supported options are.
+Constructor of the `SqsProcessor` class takes a config object.  The supported options are:
 
 - **aws**: [optional] Your AWS region and credentials.  If omitted, whatever configuration is available on your system is used.  See [here](https://docs.aws.amazon.com/sdk-for-javascript/v2/developer-guide/configuring-the-jssdk.html).
 
@@ -60,7 +60,7 @@ Constructor of the `SqsProcessor` class takes a config object.  The supported op
 
 - **queue**: [required] Queue related configurations.
     - **url**: [required] SQS queue URL
-    - **longPollingTImeSeconds**: [optional] `sokoban` use SQS's build-in long-polling mechanism to poll messages if not enough messages are immediate available in the queue.  This options tells SQS how long to wait for messages before given up. Default to 5 seconds. See [here](https://docs.aws.amazon.com/AWSSimpleQueueService/latest/SQSDeveloperGuide/sqs-long-polling.html).
+    - **longPollingTImeSeconds**: [optional] `sokoban` use SQS's build-in long-polling mechanism to poll messages if not enough messages are immediate available in the queue.  This options tells SQS how long to wait for messages before giving up. Default to 5 seconds. See [here](https://docs.aws.amazon.com/AWSSimpleQueueService/latest/SQSDeveloperGuide/sqs-long-polling.html).
 
     - **maxFetchingDelaySeconds**: [optional] When the queue processor failed to receive messages for the queue, it will retry with Fibonacci backoff.  This option specifies the maximum delay on retry.  Default to 60 seconds.
 
