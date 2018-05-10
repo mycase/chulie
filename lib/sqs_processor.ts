@@ -1,6 +1,6 @@
 import { SQS, config as awsConfig } from 'aws-sdk';
 
-import { Config, QueueConfig } from './config';
+import { Config, QueueConfig, QueueDriveMode } from './config';
 import logger from './logger';
 import { Message } from './message';
 import { MessageParser } from './message_parser';
@@ -9,6 +9,9 @@ import { RetryingService } from './retrying_service';
 import { fibonacciBackoffDelay, delay } from './helper';
 
 const SQS_RECEIVE_MESSAGE_BATCH_LIMIT = 10;
+
+const STATUS_OK = 0;
+const STATUS_NO_MESSAGE = -1;
 
 export type JobHandler = (message: Message) => void;
 
@@ -21,6 +24,8 @@ export class SqsProcessor {
   private queueUrl: string;
   private longPollingWait: number;
   private maxFetchDelay: number;
+  private driveMode: QueueDriveMode;
+  private maxFetchingRetry: number;
 
   private messageParser: MessageParser;
   private messageDeletionService: MessageDeletionService;
@@ -30,6 +35,8 @@ export class SqsProcessor {
     this.queueUrl = config.queue.url;
     this.longPollingWait = config.queue.longPollingTimeSeconds || 5;
     this.maxFetchDelay = config.queue.maxFetchingDelaySeconds || 60;
+    this.driveMode = config.queue.driveMode || 'deplete';
+    this.maxFetchingRetry = config.queue.maxFetchingRetry || 0;
 
     if (config.aws) awsConfig.update(config.aws);
     logger.setLevel(config.logLevel || 'info');
@@ -43,13 +50,27 @@ export class SqsProcessor {
     this.jobRegistry[jobClass] = handler;
   }
 
-  async start(maxFetches: number = Infinity) {
-    let fetchErrCount = 0;
-    for (let i = 0; i < maxFetches; i++) {
-      fetchErrCount = await this.fetchAndProcess(fetchErrCount);
+  async start() {
+    if (this.driveMode === 'single') {
+      await this.fetchAndProcess(0);
+    } else {
+      let fetchErrCount = 0;
+      let cont = true;
+      while (cont) {
+        const fetchStatus = await this.fetchAndProcess(fetchErrCount);
+        if (this.driveMode === 'deplete' &&
+          (fetchStatus === STATUS_NO_MESSAGE || fetchStatus > this.maxFetchingRetry)) {
+          cont = false;
+        }
+        if (fetchStatus >= STATUS_OK) fetchErrCount = fetchStatus;
+      }
     }
   }
 
+  // return values:
+  //  STATUS_OK(0):  fetched successfully and received/processed messages
+  //  STATUS_NO_MESSAGE(-1): fetched successfully and no message received
+  //  >0: fetch error count
   private async fetchAndProcess(fetchErrCount: number = 0) {
     logger.info('Fetching messages from queue.');
     let messages: SQS.Message[];
@@ -67,10 +88,10 @@ export class SqsProcessor {
     if (messages && messages.length > 0) {
       logger.info(`Received ${messages.length} messages, processing.`);
       await this.processMessages(messages);
-    } else {
-      logger.info(`No job received, queue is empty.`);
+      return STATUS_OK;
     }
-    return 0;
+    logger.info(`No job received, queue is empty.`);
+    return STATUS_NO_MESSAGE;
   }
 
   private async fetchMessages(): Promise<SQS.Message[]> {

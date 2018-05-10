@@ -1,5 +1,7 @@
 import { MessageBodyFormat } from './message';
 
+export type QueueDriveMode = 'loop' | 'deplete' | 'single';
+
 export interface AwsConfig {
   readonly region: string;
   readonly accessKeyId: string;
@@ -10,6 +12,8 @@ export interface QueueConfig {
   readonly url: string;
   readonly longPollingTimeSeconds?: number;
   readonly maxFetchingDelaySeconds?: number;
+  readonly driveMode?: QueueDriveMode;
+  readonly maxFetchingRetry?: number;
 }
 
 export interface MessageConfig {

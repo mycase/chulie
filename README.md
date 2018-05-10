@@ -35,6 +35,7 @@ At this point, this package only process messages from a single SQS queue.  Howe
             url: '<SQS queue URL>',
             longPollingTImeSeconds: 5,
             maxFetchingDelaySeconds: 60,
+            driveMode: 'loop',
         },
     }
     const processor: SqsProcessor = new SqsProcessor(config);
@@ -62,6 +63,13 @@ Constructor of the `SqsProcessor` class takes a config object.  The supported op
     - **longPollingTImeSeconds**: [optional] `sokoban` use SQS's build-in long-polling mechanism to poll messages if not enough messages are immediate available in the queue.  This options tells SQS how long to wait for messages before given up. Default to 5 seconds. See [here](https://docs.aws.amazon.com/AWSSimpleQueueService/latest/SQSDeveloperGuide/sqs-long-polling.html).
 
     - **maxFetchingDelaySeconds**: [optional] When the queue processor failed to receive messages for the queue, it will retry with Fibonacci backoff.  This option specifies the maximum delay on retry.  Default to 60 seconds.
+
+    - **driveMode**: [optional] This determines how the processor behavior in terms of fetching queue messages.  3 modes are supported:
+        - 'deplete' (default): keep fetch and process messages until the queue is depleted;
+        - 'loop': keep fetch messages indefinitely even after the queue is empty;
+        - 'single': only fetch and process messages once.  This mode is mostly for testing purpose.
+
+    - **maxFetchingRetry**: [optional] How many times to retry when error occurs during fetching messages. This option is only effective when the queue drive mode is `deplete`.  Default to `0`, does not retry.
 
 ### Job handlers
 
@@ -110,12 +118,6 @@ The queue processor is started by running
 
     processor.start();
 
-If nothing is passed to the `start()` function, the processor will loop forever.  If you want to handle any exception might leak out of the processor, you can call `then` or `catch` on the return value since the `start()` function returns a promise.
+If you want to handle any exception might leak out of the processor, you can call `then` or `catch` on the return value since the `start()` function returns a promise.
 
     processor.start().catch(err => { ... });
-
-You may optionally pass an integer to `start()`.  For example
-
-    processor.start(5);
-
-In this case, the processor only poll SQS 5 times.
