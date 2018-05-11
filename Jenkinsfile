@@ -3,7 +3,7 @@
 pipeline {
   agent none
   environment {
-    APP_NAME = 'sokoban.js'
+    APP_NAME = 'chulie.js'
   }
   options {
     ansiColor('xterm')

@@ -4,11 +4,11 @@
 
 This project may be open-sourced at some point, but until then, follow instructions in the [Appfolio npm repository wiki](https://sites.google.com/a/appfolio.com/eng/resources/our-tools/npm?pli=1) to enable our private npm repository in you project, then
 
-    npm install sokoban
+    npm install chulie
 
 or
 
-    yarn add sokoban
+    yarn add chulie
 
 #### Supported Node.js versions
 
@@ -18,7 +18,7 @@ The package is currently compiled to `ES2017` and `common.js`, thus is compatibl
 
 At this point, this package only process messages from a single SQS queue.  However, it supports multiple job handlers. Here is a quick sample of using the library:
 
-    import { Config, Message, SqsProcessor } from 'sokoban';
+    import { Config, Message, SqsProcessor } from 'chulie';
 
     const config: Config = {
         aws: {
@@ -51,16 +51,16 @@ Constructor of the `SqsProcessor` class takes a config object.  The supported op
 
 - **aws**: [optional] Your AWS region and credentials.  If omitted, whatever configuration is available on your system is used.  See [here](https://docs.aws.amazon.com/sdk-for-javascript/v2/developer-guide/configuring-the-jssdk.html).
 
-- **logLevel**: [optional] Verbose level for logging.  `sokoban` uses [loglevel](https://github.com/pimterry/loglevel) for logging.  Allowed levels are: `trace`, `info`(default), `warn`, `error`, and `silent`.
+- **logLevel**: [optional] Verbose level for logging.  `chulie` uses [loglevel](https://github.com/pimterry/loglevel) for logging.  Allowed levels are: `trace`, `info`(default), `warn`, `error`, and `silent`.
 
 - **message**: [optional] Message related configurations.
-    - **jobClassAttributeName**: [optional] `sokoban` support multiple job handlers.  This option specifies the special key to use in `MessageAttributes` of a SQS message to identify a job handler.  If not specified, the queue processor always looks for the `default` handler to process jobs in the queue.
+    - **jobClassAttributeName**: [optional] `chulie` support multiple job handlers.  This option specifies the special key to use in `MessageAttributes` of a SQS message to identify a job handler.  If not specified, the queue processor always looks for the `default` handler to process jobs in the queue.
 
     - **bodyFormat**: [optional] Format of the message body, may be either `json` or `string` (default).
 
 - **queue**: [required] Queue related configurations.
     - **url**: [required] SQS queue URL
-    - **longPollingTImeSeconds**: [optional] `sokoban` use SQS's build-in long-polling mechanism to poll messages if not enough messages are immediate available in the queue.  This options tells SQS how long to wait for messages before giving up. Default to 5 seconds. See [here](https://docs.aws.amazon.com/AWSSimpleQueueService/latest/SQSDeveloperGuide/sqs-long-polling.html).
+    - **longPollingTImeSeconds**: [optional] `chulie` use SQS's build-in long-polling mechanism to poll messages if not enough messages are immediate available in the queue.  This options tells SQS how long to wait for messages before giving up. Default to 5 seconds. See [here](https://docs.aws.amazon.com/AWSSimpleQueueService/latest/SQSDeveloperGuide/sqs-long-polling.html).
 
     - **maxFetchingDelaySeconds**: [optional] When the queue processor failed to receive messages for the queue, it will retry with Fibonacci backoff.  This option specifies the maximum delay on retry.  Default to 60 seconds.
 
@@ -101,7 +101,7 @@ The handler is passed a message object with this type definition:
         body: MessageBody;
     }
 
-These type definitions may all be imported from `sokoban`.
+These type definitions may all be imported from `chulie`.
 
 `SqsProcessor` has a `on` method to register a job handler:
 

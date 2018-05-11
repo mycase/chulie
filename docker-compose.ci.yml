@@ -2,7 +2,7 @@ version: '3'
 
 services:
   test:
-    image: ${IMAGE_NAME:-sokoban.js}
+    image: ${IMAGE_NAME:-chulie.js}
     build:
       context: .
     environment:

@@ -1,6 +1,6 @@
 import loggerL from 'loglevel';
 
-const logger = loggerL.getLogger('sokoban_logger');
+const logger = loggerL.getLogger('chulie_logger');
 
 if (logger.methodFactory === loggerL.methodFactory) {
   const originalFactory = logger.methodFactory;

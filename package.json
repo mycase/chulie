@@ -1,6 +1,6 @@
 {
-  "name": "sokoban",
-  "version": "0.1.1",
+  "name": "chulie",
+  "version": "0.2.0",
   "description": "Generic SQS processor",
   "main": "dist/index.js",
   "types": "dist/index.d.ts",
