@@ -52,7 +52,7 @@ export class SqsProcessor {
 
   async start() {
     if (this.driveMode === 'single') {
-      await this.fetchAndProcess(0);
+      await this.fetchAndProcess();
     } else {
       let fetchErrCount = 0;
       let cont = true;
