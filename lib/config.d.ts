@@ -1,4 +1,5 @@
 import { MessageBodyFormat } from './message';
+import { LogLevelDesc } from 'loglevel';
 
 export type QueueDriveMode = 'loop' | 'deplete' | 'single';
 
@@ -23,7 +24,7 @@ export interface MessageConfig {
 
 export interface Config {
   aws?: AwsConfig;
-  logLevel?: 'trace' | 'debug' | 'info' | 'warn' | 'error' | 'silent';
+  logLevel?: LogLevelDesc;
   message?: MessageConfig;
   queue: QueueConfig;
 }
