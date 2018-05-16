@@ -1,0 +1,10 @@
+.git
+.idea
+
+dist
+doc
+node_modules
+tmp
+log/*
+
+*.tgz

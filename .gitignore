@@ -57,3 +57,8 @@ typings/
 # dotenv environment variables file
 .env
 
+# Generated JS
+dist
+
+# test reports
+test/reports.xml
