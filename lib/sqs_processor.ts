@@ -13,7 +13,7 @@ const SQS_RECEIVE_MESSAGE_BATCH_LIMIT = 10;
 const STATUS_OK = 0;
 const STATUS_NO_MESSAGE = -1;
 
-export type JobHandler = (message: Message) => void;
+export type JobHandler = (message: Message) => Promise<void>;
 
 interface JobRegistry {
   [jobClass: string] : JobHandler;
@@ -127,7 +127,7 @@ export class SqsProcessor {
     if (handler) {
       logger.info(`[${message.id}] Starting.`);
       try {
-        handler(message);
+        await handler(message);
       } catch (err) {
         logger.error(`[${message.id}] Failed to process message.`, err);
         return this.retryingService.retry(msg);

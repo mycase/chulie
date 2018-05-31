@@ -260,7 +260,7 @@ describe('SqsProcessor', function () {
           callback(null, { Messages: this.messages.slice(0,1) });
         });
         this.errStub = new Error('too bad');
-        this.defaultHandlerStub.throws(this.errStub);
+        this.defaultHandlerStub.rejects(this.errStub);
       });
 
       it('should log an error', async function () {
