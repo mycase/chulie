@@ -9,10 +9,10 @@ if (logger.methodFactory === loggerL.methodFactory) {
     if (methodName === 'error') {
       return (message: string, err?: Error) => {
         if (err) message = message.concat(` Error: ${err}\n  ${err.stack}`);
-        rawMethod(message);
+        rawMethod('[chulie] ' + message);
       };
     }
-    return (message: string) => rawMethod(message);
+    return (message: string) => rawMethod('[chulie] ' + message);
   };
   logger.setLevel(logger.getLevel());
 }

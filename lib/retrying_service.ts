@@ -10,6 +10,7 @@ export class RetryingService {
   }
 
   async retry(msg: SQS.Message) {
+    logger.debug(`RetryingService.retry: SQS message: ${JSON.stringify(msg)}`);
     if (!msg.ReceiptHandle) return;
     const sqs = new SQS();
     let delayTime = 0;

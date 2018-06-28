@@ -103,7 +103,10 @@ export class SqsProcessor {
       MaxNumberOfMessages: SQS_RECEIVE_MESSAGE_BATCH_LIMIT,
       WaitTimeSeconds: this.longPollingWait,
     };
+    logger.debug('SqsProcessor.fetchMessages: Calling SQS.receiveMessage with '
+      + JSON.stringify(params));
     const data = await sqs.receiveMessage(params).promise();
+    logger.debug(`SqsProcessor.fetchMessages: Response: ${JSON.stringify(data)}`);
     if (data && data.Messages) {
       return data.Messages;
     }
@@ -115,6 +118,7 @@ export class SqsProcessor {
   }
 
   private async processMessage(msg: SQS.Message) {
+    logger.debug(`SqsProcessor.processMessage: Original SQS message: ${JSON.stringify(msg)}`);
     let message: Message;
     try {
       message = this.messageParser.parse(msg);
@@ -123,6 +127,7 @@ export class SqsProcessor {
       return this.retryingService.retry(msg);
     }
 
+    logger.debug(`SqsProcessor.processMessage: Parsed message: ${JSON.stringify(msg)}`);
     const handler = this.jobRegistry[message.jobClass];
     if (handler) {
       logger.info(`[${message.id}] Starting.`);
