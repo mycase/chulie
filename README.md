@@ -1,8 +1,12 @@
-# SQS message processor
+# chulie
 
-## Install
+AWS SQS message processor for Node.js
 
-This project may be open-sourced at some point, but until then, follow instructions in the [Appfolio npm repository wiki](https://sites.google.com/a/appfolio.com/eng/resources/our-tools/npm?pli=1) to enable our private npm repository in you project, then
+## Installation
+
+This project may be open-sourced at some point, but until then, follow
+instructions in the [Appfolio npm repository wiki] to enable our private npm
+repository in your project, then
 
     npm install chulie
 
@@ -10,114 +14,164 @@ or
 
     yarn add chulie
 
-#### Supported Node.js versions
+[Appfolio npm repository wiki]: https://sites.google.com/a/appfolio.com/eng/resources/our-tools/npm?pli=1
 
-The package is currently compiled to `ES2017` and `common.js`, thus is compatible with `Node 8.x`. If there is any need to support earlier version of Node.js, a PR to change the `typescript` target version is sufficient.
+### Supported Node.js versions
+
+This package is written in TypeScript and is currently configured to compile to
+`ES2017` and `commonjs`. Thus, it's compatible with `Node 8.x` and above.
 
 ## Usage
 
-At this point, this package only process messages from a single SQS queue.  However, it supports multiple job handlers. Here is a quick sample of using the library:
+Currently `chulie` only processes messages from a single SQS queue. However, it
+supports multiple job handlers. Here is a quick sample of using the library:
 
-    import { Config, Message, SqsProcessor } from 'chulie';
+```ts
+import { Config, Message, SqsProcessor } from 'chulie';
 
-    const config: Config = {
-        aws: {
-            region: '<AWS region for the queue>',
-            accessKeyId: '<AWS credential>',
-            secretAccessKey: '<AWS credential>',
-        }
-        logLevel: 'info',
-        message: {
-            jobClassAttributeName: 'job_class',
-            bodyFormat: 'json'
-        },
-        queue: {
-            url: '<SQS queue URL>',
-            longPollingTImeSeconds: 5,
-            maxFetchingDelaySeconds: 60,
-            driveMode: 'loop',
-        },
+const config: Config = {
+    aws: {
+        region: '<AWS region for the queue>',
+        accessKeyId: '<AWS credential>',
+        secretAccessKey: '<AWS credential>'
     }
-    const processor: SqsProcessor = new SqsProcessor(config);
+    logLevel: 'info',
+    message: {
+        jobClassAttributeName: 'job_class',
+        bodyFormat: 'json'
+    },
+    queue: {
+        url: '<SQS queue URL>',
+        longPollingTimeSeconds: 5,
+        maxFetchingDelaySeconds: 60,
+        driveMode: 'loop'
+    }
+}
+const processor: SqsProcessor = new SqsProcessor(config);
 
-    processor.on('default', (msg: Message) => {});
-    processor.on('job1', (msg: Message) => {});
+processor.on('default', (msg: Message) => { /* ... */ });
+processor.on('job1', (msg: Message) => { /* ... */ });
 
-    processor.start();
+processor.start();
+```
 
 ### Config options
 
-Constructor of the `SqsProcessor` class takes a config object.  The supported options are:
+The constructor of the `SqsProcessor` class takes a config object whose
+supported options are:
 
-- **aws**: [optional] Your AWS region and credentials.  If omitted, whatever configuration is available on your system is used.  See [here](https://docs.aws.amazon.com/sdk-for-javascript/v2/developer-guide/configuring-the-jssdk.html).
+- **aws**: [optional] An object containing the AWS `region`, `accessKeyId`, and
+  `secretAccessKey`. If omitted, whatever configuration is available on your
+   system is used. See the corresponding [AWS JavaScript SDK docs].
 
-- **logLevel**: [optional] Verbose level for logging.  `chulie` uses [loglevel](https://github.com/pimterry/loglevel) for logging.  Allowed levels are: `trace`, `info`(default), `warn`, `error`, and `silent`.
+- **logLevel**: [optional] Verbosity level for logging. `chulie` uses
+  [`loglevel`] for logging. Allowed levels are: `trace`, `info` (default),
+  `warn`, `error`, and `silent`.
 
-- **message**: [optional] Message related configurations.
-    - **jobClassAttributeName**: [optional] `chulie` support multiple job handlers.  This option specifies the special key to use in `MessageAttributes` of a SQS message to identify a job handler.  If not specified, the queue processor always looks for the `default` handler to process jobs in the queue.
+- **message**: [optional] Message related configurations
+    - **jobClassAttributeName**: [optional] `chulie` supports multiple job
+      handlers. This option specifies the special key to use in the
+      `MessageAttributes` of an SQS message to identify a job handler. If not
+      specified, the queue processor always looks for the `default` handler to
+      process jobs in the queue.
 
-    - **bodyFormat**: [optional] Format of the message body, may be either `json` or `string` (default).
+    - **bodyFormat**: [optional] Format of the message body - may be either
+      `json` or `string` (default).
 
-- **queue**: [required] Queue related configurations.
+- **queue**: [required] Queue related configurations
     - **url**: [required] SQS queue URL
-    - **longPollingTImeSeconds**: [optional] `chulie` use SQS's build-in long-polling mechanism to poll messages if not enough messages are immediate available in the queue.  This options tells SQS how long to wait for messages before giving up. Default to 5 seconds. See [here](https://docs.aws.amazon.com/AWSSimpleQueueService/latest/SQSDeveloperGuide/sqs-long-polling.html).
 
-    - **maxFetchingDelaySeconds**: [optional] When the queue processor failed to receive messages for the queue, it will retry with Fibonacci backoff.  This option specifies the maximum delay on retry.  Default to 60 seconds.
+    - **longPollingTimeSeconds**: [optional] `chulie` use SQS's built-in
+      long-polling mechanism to poll for messages if not enough messages are
+      immediately available in the queue. This option tells SQS how long to wait
+      for messages before giving up. Defaults to 5 seconds. See the
+      [AWS SQS docs].
 
-    - **driveMode**: [optional] This determines how the processor behavior in terms of fetching queue messages.  3 modes are supported:
-        - 'deplete' (default): keep fetch and process messages until the queue is depleted;
-        - 'loop': keep fetch messages indefinitely even after the queue is empty;
-        - 'single': only fetch and process messages once.  This mode is mostly for testing purpose.
+    - **maxFetchingDelaySeconds**: [optional] When the queue processor fails to
+      receive messages from the queue, it will retry with Fibonacci backoff.
+      This option specifies the maximum delay on retry. Defaults to 60 seconds.
 
-    - **maxFetchingRetry**: [optional] How many times to retry when error occurs during fetching messages. This option is only effective when the queue drive mode is `deplete`.  Default to `0`, does not retry.
+    - **driveMode**: [optional] This determines how the processor behaves in
+      terms of fetching queue messages. 3 modes are supported:
+        - 'deplete' (default): Keep fetching and processing messages until the
+          queue is depleted.
+        - 'loop': Keep fetching messages indefinitely even after the queue is
+          empty.
+        - 'single': Only fetch and process messages once. This mode is mostly
+          for testing purposes.
+
+    - **maxFetchingRetry**: [optional] How many times to retry when an error
+      occurs while fetching messages. This option is only effective when the
+      queue drive mode is `deplete`. Defaults to `0` (no retries).
+
+[AWS JavaScript SDK docs]: https://docs.aws.amazon.com/sdk-for-javascript/v2/developer-guide/configuring-the-jssdk.html
+[`loglevel`]: https://github.com/pimterry/loglevel
+[AWS SQS docs]: https://docs.aws.amazon.com/AWSSimpleQueueService/latest/SQSDeveloperGuide/sqs-long-polling.html
 
 ### Job handlers
 
 All job handlers have a simple function signature defined as
 
-    export type JobHandler = (message: Message) => void;
+```ts
+export type JobHandler = (message: Message) => void;
+```
 
 The handler is passed a message object with this type definition:
 
-    export type JsonObject = boolean | number | string | null | JsonArray | JsonHash;
+```ts
+export type JsonObject = boolean | number | string | null | JsonArray | JsonHash;
 
-    interface JsonHash {
-        [key: string]: JsonObject;
-    }
+interface JsonHash {
+    [key: string]: JsonObject;
+}
 
-    interface JsonArray extends Array<JsonObject> {}
+interface JsonArray extends Array<JsonObject> {}
 
-    export interface MessageAttributes {
-        [name: string]: string;
-    }
+export interface MessageAttributes {
+    [name: string]: string;
+}
 
-    export type MessageBody = string | JsonObject;
+export type MessageBody = string | JsonObject;
 
-    export interface Message {
-        originalMessage: SQS.Message;
-        id: string;
-        attributes: MessageAttributes;
-        jobClass: string;
-        body: MessageBody;
-    }
+export interface Message {
+    originalMessage: SQS.Message;
+    id: string;
+    attributes: MessageAttributes;
+    jobClass: string;
+    body: MessageBody;
+}
+```
 
 These type definitions may all be imported from `chulie`.
 
-`SqsProcessor` has a `on` method to register a job handler:
+`SqsProcessor` has an `on` method to register a job handler:
 
-    const job_handler: JobHandler = (msg: Message) => { ... };
-    processor.on('job_class_name', job_handler);
+```ts
+const job_handler: JobHandler = (msg: Message) => { /* ... */ };
+processor.on('job_class_name', job_handler);
+```
 
-There is one special job class named 'default'.  The queue process use this handler if `message.jobClassAttributeName` is not defined in the config object, or if a message does not have a job class speficied in its `MessageAttributes`.  The default handler is registered the same way as any other handlers:
+There is one special job class named 'default'. The queue process uses this
+handler if `message.jobClassAttributeName` is not defined in the config object,
+or if a message does not have a job class specified in its `MessageAttributes`.
+The default handler is registered the same way as any other handler:
 
-    processor.on('default', default_handler);
+```ts
+processor.on('default', default_handler);
+```
 
 ### Driver
 
 The queue processor is started by running
 
-    processor.start();
+```ts
+processor.start();
+```
 
-If you want to handle any exception might leak out of the processor, you can call `then` or `catch` on the return value since the `start()` function returns a promise.
+If you want to handle any exception that might leak out of the processor, you
+can call `then` or `catch` on the return value since the `start()` function
+returns a `Promise`.
 
-    processor.start().catch(err => { ... });
+```ts
+processor.start().catch(err => { /* ... */ });
+```
