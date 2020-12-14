@@ -15,15 +15,23 @@ describe('logger', function () {
     logger.setLevel(this.oldLevel);
   });
 
-  ['debug', 'info'].forEach((method) => {
-    describe(method, function () {
-      it(`should write message to stdout`, function () {
-        const stdOutStub = sandbox.stub(process.stdout, 'write');
-        logger[method]('words');
-        assert.calledOnce(stdOutStub);
-        assert.calledWith(stdOutStub, match('words'));
-        sandbox.restore();
-      });
+  describe('debug', function () {
+    it(`should write message to stdout`, function () {
+      const stdOutStub = sandbox.stub(process.stdout, 'write');
+      logger.debug('words');
+      assert.calledOnce(stdOutStub);
+      assert.calledWith(stdOutStub, match('words'));
+      sandbox.restore();
+    });
+  });
+
+  describe('info', function () {
+    it(`should write message to stdout`, function () {
+      const stdOutStub = sandbox.stub(process.stdout, 'write');
+      logger.info('words');
+      assert.calledOnce(stdOutStub);
+      assert.calledWith(stdOutStub, match('words'));
+      sandbox.restore();
     });
   });
 
@@ -50,7 +58,7 @@ describe('logger', function () {
     it('should format error if error is provided', function () {
       try {
         throw new Error('wrong wrong');
-      } catch(err) {
+      } catch (err) {
         logger.error('something is wrong', err);
         assert.calledOnce(this.stdErrStub);
         assert.calledWith(this.stdErrStub,
