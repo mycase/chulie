@@ -51,9 +51,9 @@ describe('SqsProcessor', function () {
   });
 
   describe('when failed to receive message', function () {
-    beforeEach(function(){
+    beforeEach(function () {
       this.errStub = new Error('bad queue');
-      this.receiveMessageSpy = sandbox.spy((params, callback) => callback(this.errStub));
+      this.receiveMessageSpy = sandbox.spy((params: any, callback: any) => callback(this.errStub));
       AwsMock.mock('SQS', 'receiveMessage', this.receiveMessageSpy);
       this.delayStub = sandbox.stub(Helper, 'delay').resolves();
     });
@@ -76,8 +76,9 @@ describe('SqsProcessor', function () {
   });
 
   describe('when the queue is empty', function () {
-    beforeEach(function() {
-      this.receiveMessageSpy = sandbox.spy((params, callback) => callback(null, { Messages: [] }));
+    beforeEach(function () {
+      this.receiveMessageSpy =
+        sandbox.spy((params: any, callback: any) => callback(null, { Messages: [] }));
       AwsMock.mock('SQS', 'receiveMessage', this.receiveMessageSpy);
       this.delaySpy = sandbox.spy(Helper, 'delay');
     });
@@ -143,7 +144,7 @@ describe('SqsProcessor', function () {
     describe('and everything is successful', function () {
       beforeEach(function () {
         let callCount = 0;
-        AwsMock.mock('SQS', 'receiveMessage', (params, callback) => {
+        AwsMock.mock('SQS', 'receiveMessage', (params: any, callback: any) => {
           let args = { Messages: [] };
           if (callCount === 0) {
             callCount++;
@@ -178,8 +179,8 @@ describe('SqsProcessor', function () {
 
     describe('and failed to parse a message', function () {
       beforeEach(function () {
-        AwsMock.mock('SQS', 'receiveMessage', (params, callback) => {
-          callback(null, { Messages: this.messages.slice(0,1) });
+        AwsMock.mock('SQS', 'receiveMessage', (params: any, callback: any) => {
+          callback(null, { Messages: this.messages.slice(0, 1) });
         });
 
         this.errStub = new Error('too bad');
@@ -222,7 +223,7 @@ describe('SqsProcessor', function () {
           ReceiptHandle: 'handle11',
         };
 
-        AwsMock.mock('SQS', 'receiveMessage', (params, callback) => {
+        AwsMock.mock('SQS', 'receiveMessage', (params: any, callback: any) => {
           callback(null, { Messages: [this.message] });
         });
       });
@@ -256,8 +257,8 @@ describe('SqsProcessor', function () {
 
     describe('and failed to run the handler', function () {
       beforeEach(function () {
-        AwsMock.mock('SQS', 'receiveMessage', (params, callback) => {
-          callback(null, { Messages: this.messages.slice(0,1) });
+        AwsMock.mock('SQS', 'receiveMessage', (params: any, callback: any) => {
+          callback(null, { Messages: this.messages.slice(0, 1) });
         });
         this.errStub = new Error('too bad');
         this.defaultHandlerStub.rejects(this.errStub);
@@ -307,7 +308,8 @@ describe('SqsProcessor', function () {
     describe('when failed to receive message', function () {
       beforeEach(function () {
         this.errStub = new Error('bad queue');
-        this.receiveMessageSpy = sandbox.spy((params, callback) => callback(this.errStub));
+        this.receiveMessageSpy =
+          sandbox.spy((params: any, callback: any) => callback(this.errStub));
         AwsMock.mock('SQS', 'receiveMessage', this.receiveMessageSpy);
         this.delayStub = sandbox.stub(Helper, 'delay').resolves();
       });
@@ -329,7 +331,7 @@ describe('SqsProcessor', function () {
 
     describe('when the queue is empty', function () {
       beforeEach(function () {
-        this.receiveMessageSpy = sandbox.spy((params, callback) => {
+        this.receiveMessageSpy = sandbox.spy((params: any, callback: any) => {
           callback(null, { Messages: [] });
         });
         AwsMock.mock('SQS', 'receiveMessage', this.receiveMessageSpy);
@@ -355,7 +357,7 @@ describe('SqsProcessor', function () {
         };
 
         let fetchCount = 0;
-        this.receiveMessageSpy = sandbox.spy((params, callback) => {
+        this.receiveMessageSpy = sandbox.spy((params: any, callback: any) => {
           if (fetchCount < 3) {
             fetchCount++;
             callback(null, { Messages: [this.message] });
@@ -398,7 +400,8 @@ describe('SqsProcessor', function () {
     describe('when failed to receive message', function () {
       beforeEach(function () {
         this.errStub = new Error('bad queue');
-        this.receiveMessageSpy = sandbox.spy((params, callback) => callback(this.errStub));
+        this.receiveMessageSpy =
+          sandbox.spy((params: any, callback: any) => callback(this.errStub));
         AwsMock.mock('SQS', 'receiveMessage', this.receiveMessageSpy);
         this.delayStub = sandbox.stub(Helper, 'delay').resolves();
       });
@@ -410,7 +413,7 @@ describe('SqsProcessor', function () {
 
     describe('when the queue is empty', function () {
       beforeEach(function () {
-        this.receiveMessageSpy = sandbox.spy((params, callback) => {
+        this.receiveMessageSpy = sandbox.spy((params: any, callback: any) => {
           callback(null, { Messages: [] });
         });
         AwsMock.mock('SQS', 'receiveMessage', this.receiveMessageSpy);

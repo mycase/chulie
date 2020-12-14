@@ -28,7 +28,8 @@ describe('RetryingService', function () {
   });
 
   it('should setup backoff retry based on message receive count', async function () {
-    const changeMessageVisibilitySpy = sandbox.spy(function (params, callback) { callback(); });
+    const changeMessageVisibilitySpy =
+      sandbox.spy(function (params: any, callback: any) { callback(); });
     AwsMock.mock('SQS', 'changeMessageVisibility', changeMessageVisibilitySpy);
     const expectedDelay = fibonacciBackoffDelay(
       parseInt(message.Attributes.ApproximateReceiveCount, 10) - 1,
@@ -48,7 +49,7 @@ describe('RetryingService', function () {
   });
 
   it('should log error when message is already removed from the queue', async function () {
-    AwsMock.mock('SQS', 'changeMessageVisibility', function (params, callback) {
+    AwsMock.mock('SQS', 'changeMessageVisibility', function (params: any, callback: any) {
       callback({ code: 'ReceiptHandleIsInvalid' });
     });
 
@@ -61,7 +62,7 @@ describe('RetryingService', function () {
 
   it('should log error on all other errors', async function () {
     const errStub = sandbox.stub();
-    AwsMock.mock('SQS', 'changeMessageVisibility', function (params, callback) {
+    AwsMock.mock('SQS', 'changeMessageVisibility', function (params: any, callback: any) {
       callback(errStub);
     });
 
@@ -69,7 +70,7 @@ describe('RetryingService', function () {
     assert.calledWith(
       this.errorLogSpy,
       `[${message.MessageId}] Failed to update message visibility timeout, ` +
-        'message will be retried after current visibility timeout.',
+      'message will be retried after current visibility timeout.',
       errStub,
     );
   });

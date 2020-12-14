@@ -29,7 +29,7 @@ describe('MessageDeletionService', function () {
   });
 
   it('should delete the message from queue', async function () {
-    const deleteMessageSpy = sandbox.spy((params, callback) => callback());
+    const deleteMessageSpy = sandbox.spy((params: any, callback: any) => callback());
     AwsMock.mock('SQS', 'deleteMessage', deleteMessageSpy);
 
     await this.service.delete(message);
@@ -42,7 +42,7 @@ describe('MessageDeletionService', function () {
 
   describe('when a message is already removed from queue', function () {
     it('should not retry', async function () {
-      const deleteMessageSpy = sandbox.spy(function (params, callback) {
+      const deleteMessageSpy = sandbox.spy(function (params: any, callback: any) {
         callback({ code: 'ReceiptHandleIsInvalid' });
       });
       AwsMock.mock('SQS', 'deleteMessage', deleteMessageSpy);
@@ -59,7 +59,7 @@ describe('MessageDeletionService', function () {
   describe('when failed to delete a message', function () {
     beforeEach(function () {
       this.errStub = new Error('wrong wrong');
-      this.deleteMessageSpy = sandbox.spy((params, callback) => {
+      this.deleteMessageSpy = sandbox.spy((params: any, callback: any) => {
         callback(this.errStub);
       });
       AwsMock.mock('SQS', 'deleteMessage', this.deleteMessageSpy);
