@@ -6,6 +6,7 @@
     "type": "git",
     "url": "https://github.com/mycase/chulie.git"
   },
+  "license": "MIT",
   "author": "MyCase Engineering <opensource@mycase.com>",
   "main": "dist/index.js",
   "types": "dist/index.d.ts",
