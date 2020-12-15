@@ -2,11 +2,16 @@
   "name": "chulie",
   "version": "0.5.0",
   "description": "Generic SQS processor",
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/mycase/chulie.git"
+  },
+  "author": "MyCase Engineering <opensource@mycase.com>",
   "main": "dist/index.js",
   "types": "dist/index.d.ts",
-  "publishConfig": {
-    "registry": "https://nexus.dev.appf.io/repository/npm-hosted/"
-  },
+  "files": [
+    "dist/**/*"
+  ],
   "scripts": {
     "build": "rm -rf dist && tsc && cp lib/*.d.ts dist/lib",
     "prepublishOnly": "npm run build",
@@ -32,8 +37,5 @@
     "tslint": "^5.9.1",
     "tslint-config-airbnb-base": "^0.1.0",
     "typescript": "^4.1.2"
-  },
-  "files": [
-    "dist/**/*"
-  ]
+  }
 }

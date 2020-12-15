@@ -4,17 +4,11 @@ AWS SQS message processor for Node.js
 
 ## Installation
 
-This project may be open-sourced at some point, but until then, follow
-instructions in the [Appfolio npm repository wiki] to enable our private npm
-repository in your project, then
-
     npm install chulie
 
 or
 
     yarn add chulie
-
-[Appfolio npm repository wiki]: https://sites.google.com/a/appfolio.com/eng/resources/our-tools/npm?pli=1
 
 ### Supported Node.js versions
 
