@@ -16,7 +16,8 @@
   "scripts": {
     "build": "rm -rf dist && tsc && cp lib/*.d.ts dist/lib",
     "prepublishOnly": "npm run build",
-    "test": "mocha ${TESTS:-test/**/*.test.ts}"
+    "test": "mocha ${TESTS:-test/**/*.test.ts}",
+    "test:ci": "if [ \"${MEASURE_COVERAGE}\" = 'true' ]; then nyc npm test; else npm test; fi"
   },
   "dependencies": {
     "aws-sdk": ">=2.218",
@@ -33,6 +34,7 @@
     "mocha": "^5.2.0",
     "mocha-junit-reporter": "^1.18.0",
     "mocha-multi-reporters": "^1.1.7",
+    "nyc": "^15.1.0",
     "sinon": "^5.1.0",
     "ts-node": "^9.1.1",
     "tslint": "^5.9.1",

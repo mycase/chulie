@@ -11,6 +11,7 @@ export class MessageDeletionService {
 
   async delete(message: SQS.Message) {
     logger.debug(`MessageDeletionService.delete: SQS message: ${JSON.stringify(message)}`);
+    /* istanbul ignore if */
     if (!message.ReceiptHandle) return;
     const sqs = new SQS();
 
