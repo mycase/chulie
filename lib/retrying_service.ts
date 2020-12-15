@@ -11,9 +11,11 @@ export class RetryingService {
 
   async retry(msg: SQS.Message) {
     logger.debug(`RetryingService.retry: SQS message: ${JSON.stringify(msg)}`);
+    /* istanbul ignore if */
     if (!msg.ReceiptHandle) return;
     const sqs = new SQS();
     let delayTime = 0;
+    /* istanbul ignore else */
     if (msg.Attributes && msg.Attributes.ApproximateReceiveCount){
       const receiveCount = parseInt(msg.Attributes.ApproximateReceiveCount, 10);
       delayTime = fibonacciBackoffDelay(receiveCount - 1);

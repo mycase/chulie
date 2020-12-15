@@ -3,6 +3,7 @@ import { MessageConfig } from './config';
 import { Message, MessageAttributes, MessageBody, MessageBodyFormat } from './message';
 
 function parseAttributes(msg: SQS.Message): MessageAttributes {
+  /* istanbul ignore else */
   if (msg.MessageAttributes) {
     return Object.assign(
       {},
@@ -11,6 +12,7 @@ function parseAttributes(msg: SQS.Message): MessageAttributes {
                .map(([name, val]) => ({ [name]: val.StringValue })),
     );
   }
+  /* istanbul ignore next */
   return {};
 }
 

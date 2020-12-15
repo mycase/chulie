@@ -2,6 +2,7 @@ import loggerL from 'loglevel';
 
 const logger = loggerL.getLogger('chulie_logger');
 
+/* istanbul ignore else */
 if (logger.methodFactory === loggerL.methodFactory) {
   const originalFactory = logger.methodFactory;
   logger.methodFactory = (methodName, logLevel, loggerName) => {

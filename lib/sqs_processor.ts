@@ -33,13 +33,14 @@ export class SqsProcessor {
 
   constructor(config: Config) {
     this.queueUrl = config.queue.url;
-    this.longPollingWait = config.queue.longPollingTimeSeconds || 5;
-    this.maxFetchDelay = config.queue.maxFetchingDelaySeconds || 60;
-    this.driveMode = config.queue.driveMode || 'deplete';
+    this.longPollingWait = config.queue.longPollingTimeSeconds || /* istanbul ignore next */ 5;
+    this.maxFetchDelay = config.queue.maxFetchingDelaySeconds || /* istanbul ignore next */ 60;
+    this.driveMode = config.queue.driveMode || /* istanbul ignore next */ 'deplete';
     this.maxFetchingRetry = config.queue.maxFetchingRetry || 0;
 
+    /* istanbul ignore if */
     if (config.aws) awsConfig.update(config.aws);
-    logger.setLevel(config.logLevel || 'info');
+    logger.setLevel(config.logLevel || /* istanbul ignore next */ 'info');
 
     this.messageParser = new MessageParser(config.message);
     this.messageDeletionService = new MessageDeletionService(this.queueUrl);
@@ -107,9 +108,11 @@ export class SqsProcessor {
       + JSON.stringify(params));
     const data = await sqs.receiveMessage(params).promise();
     logger.debug(`SqsProcessor.fetchMessages: Response: ${JSON.stringify(data)}`);
+    /* istanbul ignore else */
     if (data && data.Messages) {
       return data.Messages;
     }
+    /* istanbul ignore next */
     return [];
   }
 
