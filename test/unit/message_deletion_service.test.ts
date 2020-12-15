@@ -4,7 +4,7 @@ import AwsMock from 'aws-sdk-mock';
 
 import { MessageDeletionService } from '../../lib/message_deletion_service';
 import logger from '../../lib/logger';
-import { fibonacciBackoffDelay } from '../../lib/helper';
+import * as Helper from '../../lib/helper';
 
 const sandbox = createSandbox();
 
@@ -57,67 +57,19 @@ describe('MessageDeletionService', function () {
   });
 
   describe('when failed to delete a message', function () {
-    beforeEach(function () {
-      this.errStub = new Error('wrong wrong');
-      this.deleteMessageSpy = sandbox.spy((params: any, callback: any) => {
-        callback(this.errStub);
+    it('should retry until succeeded', async function () {
+      const errStub = new Error('something is wrong');
+      let callCount = 0;
+      const deleteMessageSpy = sandbox.spy((params: any, callback: any) => {
+        callCount += 1;
+        callback(callCount < 5 ? errStub : null);
       });
-      AwsMock.mock('SQS', 'deleteMessage', this.deleteMessageSpy);
+      AwsMock.mock('SQS', 'deleteMessage', deleteMessageSpy);
 
-      this.clock = sandbox.useFakeTimers();
-    });
+      sandbox.stub(Helper, 'delay').resolves();
 
-    afterEach(function () {
-      this.clock.restore();
-    });
-
-    it('should log error', async function () {
-      expect(await this.service.delete(message));
-      assert.calledWith(
-        this.errorLogSpy,
-        `[${message.MessageId}] Failed to delete message.`,
-        this.errStub,
-      );
-      assert.calledWith(
-        this.errorLogSpy,
-        `[${message.MessageId}] Waiting for 0 seconds before retry.`,
-      );
-    });
-
-    it('should retry indefinitely', function (done) {
-      this.service.delete(message).then(() => {
-        assert.calledOnce(this.deleteMessageSpy);
-        assert.calledWith(this.errorLogSpy, '[1] Failed to delete message.', this.errStub);
-        assert.calledWith(this.errorLogSpy, '[1] Waiting for 0 seconds before retry.');
-        this.clock.tick(0);
-        process.nextTick(() => {
-          assert.calledTwice(this.deleteMessageSpy);
-          assert.calledWith(this.errorLogSpy, '[1] Waiting for 1 seconds before retry.');
-          this.clock.tick(1000);
-          process.nextTick(() => {
-            assert.calledThrice(this.deleteMessageSpy);
-            assert.calledWith(this.errorLogSpy, '[1] Waiting for 1 seconds before retry.');
-            this.clock.tick(1000);
-            process.nextTick(() => {
-              assert.callCount(this.deleteMessageSpy, 4);
-              assert.calledWith(this.errorLogSpy, '[1] Waiting for 2 seconds before retry.');
-              this.clock.tick(2000);
-              process.nextTick(() => {
-                assert.callCount(this.deleteMessageSpy, 5);
-                assert.calledWith(this.errorLogSpy,
-                  '[1] Waiting for 3 seconds before retry.');
-                this.clock.tick(3000);
-                process.nextTick(() => {
-                  assert.callCount(this.deleteMessageSpy, 6);
-                  assert.calledWith(this.errorLogSpy,
-                    '[1] Waiting for 5 seconds before retry.');
-                  done();
-                });
-              });
-            });
-          });
-        });
-      });
+      await this.service.delete(message);
+      assert.callCount(deleteMessageSpy, 5);
     });
   });
 });
