@@ -10,6 +10,9 @@ jobs:
     strategy:
       matrix:
         node-version: [10.x, 12.x, 14.x]
+        include:
+          - node-version: 14.x
+            measure_coverage: true
 
     steps:
       - uses: actions/checkout@v2
@@ -18,4 +21,12 @@ jobs:
         with:
           node-version: ${{ matrix.node-version }}
       - run: npm ci
-      - run: npm test
+      - run: npm run test:ci
+        env:
+          MEASURE_COVERAGE: ${{ matrix.measure_coverage }}
+      - uses: actions/upload-artifact@v2
+        if: ${{ matrix.measure_coverage }}
+        with:
+          name: code-coverage-report
+          path: coverage/
+          if-no-files-found: error
