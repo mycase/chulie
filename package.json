@@ -16,7 +16,8 @@
   "scripts": {
     "build": "rm -rf dist && tsc && cp lib/*.d.ts dist/lib",
     "prepublishOnly": "npm run build",
-    "test": "mocha ${TESTS:-test/**/*.test.ts}"
+    "test": "mocha ${TESTS:-test/**/*.test.ts}",
+    "test:ci": "if [ \"${MEASURE_COVERAGE}\" = 'true' ]; then nyc npm test; else npm test; fi"
   },
   "dependencies": {
     "aws-sdk": ">=2.218",
