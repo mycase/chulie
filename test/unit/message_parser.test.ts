@@ -49,6 +49,17 @@ describe('Parsed message', function () {
     expect(this.msg.id).to.equal(sqsMessage.MessageId);
   });
 
+  describe('if no message id is given', function() {
+    it('should return Unknown_Message_ID', function() {
+      const sqsMessageWithoutMessageId = {
+        MessageAttributes: sqsMessage.MessageAttributes,
+        Body: sqsMessage.Body
+      };
+      const msg = new MessageParser().parse(sqsMessageWithoutMessageId);
+      expect(msg.id).to.equal('Unknown_Message_ID');
+    });
+  });
+
   describe('attributes', function () {
     it('should include all number and string attributes from original message', function () {
       expect(this.msg.attributes).to.include({
@@ -93,6 +104,25 @@ describe('Parsed message', function () {
     it('should be parsed to a JSON object if bodyFormat is configured as json', function () {
       const msg = new MessageParser({ bodyFormat: 'json' }).parse(sqsMessage);
       expect(msg.body).to.eql(msgBody);
+    });
+
+    describe('if no message body is given', function() {
+      beforeEach(function () {
+        this.sqsMessageWithoutBody = {
+          MessageId: sqsMessage.MessageId,
+          MessageAttributes: sqsMessage.MessageAttributes
+        };
+      });
+
+      it('should default to an empty string when bodyFormat is string', function() {
+        const msg = new MessageParser({ bodyFormat: 'string' }).parse(this.sqsMessageWithoutBody);
+        expect(msg.body).to.equal('');
+      });
+
+      it('should default to an empty object when bodyFormat is json', function() {
+        const msg = new MessageParser({ bodyFormat: 'json' }).parse(this.sqsMessageWithoutBody);
+        expect(msg.body).to.eql({});
+      });
     });
   });
 });
