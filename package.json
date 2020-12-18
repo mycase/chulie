@@ -1,6 +1,6 @@
 {
   "name": "chulie",
-  "version": "0.6.0",
+  "version": "0.6.1",
   "description": "Generic SQS processor",
   "repository": {
     "type": "git",
